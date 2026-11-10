@@ -301,6 +301,7 @@ html, body {
   font: inherit;
   outline: none;
 }
+#cid,
 select {
   padding: 10px 12px;
   border: 1px solid var(--line);
@@ -357,3 +358,7 @@ hr { border: 0; border-top: 1px solid var(--line); }
 .switch { display: flex; align-items: center; gap: 10px; cursor: pointer; }
 .switch input { width: 18px; height: 18px; accent-color: var(--accent); }
 .keys { color: var(--muted); font-size: 12px; }
+#cid { min-width: 0; font-family: ui-monospace, monospace; outline: none; }
+#cid:focus { border-color: var(--accent); }
+.help { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.help a { color: inherit; }

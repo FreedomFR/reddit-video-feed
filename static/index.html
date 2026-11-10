@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#000000">
   <title>Reddit Video Feed</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
   <header id="top">
@@ -66,12 +66,21 @@
     <button class="primary" type="submit">Afficher</button>
 
     <hr>
+    <label class="field" id="cid-field" hidden>
+      <span>Identifiant de ton app Reddit</span>
+      <input id="cid" name="cid" placeholder="client_id d'une « installed app »" spellcheck="false"
+             autocapitalize="off" autocorrect="off">
+      <small class="help">Version sans serveur : crée une app de type « installed app » sur
+        <a href="https://www.reddit.com/prefs/apps" target="_blank" rel="noopener noreferrer">reddit.com/prefs/apps</a>
+        et colle ici le code affiché sous son nom. Il reste dans ce navigateur.</small>
+    </label>
     <label class="switch"><input type="checkbox" id="opt-sound"><span>Son activé par défaut</span></label>
     <label class="switch"><input type="checkbox" id="opt-next"><span>Passer à la suivante à la fin de la vidéo</span></label>
     <label class="switch"><input type="checkbox" id="opt-nsfw"><span>Afficher le contenu NSFW</span></label>
     <p class="keys">↑ ↓ ou K J : vidéo précédente / suivante · Espace : pause · M : son · O : ouvrir sur Reddit · / : changer de subreddit</p>
   </form>
 
-  <script src="/static/app.js" defer></script>
+  <script src="static/reddit.js" defer></script>
+  <script src="static/app.js" defer></script>
 </body>
 </html>

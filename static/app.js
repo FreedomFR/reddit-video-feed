@@ -91,6 +91,32 @@
     return ok;
   }
 
+  /* ================================================================ accès à Reddit */
+  // Avec le serveur Flask (Docker), on passe par /api/*. Sans serveur (GitHub Pages),
+  // le navigateur interroge Reddit lui-même via static/reddit.js.
+  const api = {
+    direct: false,
+    ready: fetch('healthz', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { api.direct = !j?.ok; })
+      .catch(() => { api.direct = true; }),
+
+    async feed(params) {
+      if (api.direct) return window.RedditDirect.feed(params);
+      const query = new URLSearchParams({ sub: params.sub, sort: params.sort, t: params.t, nsfw: params.nsfw ? '1' : '0' });
+      if (params.after) query.set('after', params.after);
+      const res = await fetch('api/feed?' + query);
+      const data = await res.json().catch(() => ({ error: 'Réponse invalide du serveur.' }));
+      if (!res.ok) throw new Error(data.error || `Erreur ${res.status}`);
+      return data;
+    },
+
+    audio(id) {
+      if (api.direct) return window.RedditDirect.audio(id);
+      return fetch('api/audio/' + id).then((r) => r.json()).then((j) => j.url || null);
+    },
+  };
+
   /* ================================================================ état */
   const state = {
     sub: '', sort: 'hot', t: 'day',
@@ -112,10 +138,7 @@
 
   function audioUrl(id) {
     if (!audioUrls.has(id)) {
-      audioUrls.set(id, fetch('/api/audio/' + id)
-        .then((r) => r.json())
-        .then((j) => j.url || null)
-        .catch(() => null));
+      audioUrls.set(id, api.audio(id).catch(() => null));
     }
     return audioUrls.get(id);
   }
@@ -362,12 +385,8 @@
     setTail('loading');
     const gen = state.gen;
     try {
-      const query = new URLSearchParams({ sub: state.sub, sort: state.sort, t: state.t, nsfw: settings.nsfw ? '1' : '0' });
-      if (state.after) query.set('after', state.after);
-      const res = await fetch('/api/feed?' + query);
-      const data = await res.json().catch(() => ({ error: 'Réponse invalide du serveur.' }));
+      const data = await api.feed({ sub: state.sub, sort: state.sort, t: state.t, after: state.after, nsfw: settings.nsfw });
       if (gen !== state.gen) return;
-      if (!res.ok) throw new Error(data.error || `Erreur ${res.status}`);
 
       state.after = data.after;
       state.done = !data.after;
@@ -475,6 +494,8 @@
     $('#opt-sound').checked = settings.sound;
     $('#opt-next').checked = settings.autonext;
     $('#opt-nsfw').checked = settings.nsfw;
+    $('#cid-field').hidden = !api.direct;
+    if (api.direct) $('#cid').value = window.RedditDirect.clientId.get();
     renderRecents();
     panel.hidden = false;
     scrim.hidden = false;
@@ -500,6 +521,11 @@
     if (!sub) return;
     start(sub, draftSort, $('#t').value);
     closePanel();
+  });
+
+  $('#cid').addEventListener('change', (e) => {
+    window.RedditDirect.clientId.set(e.target.value);
+    start(state.sub, state.sort, state.t);
   });
 
   $('#opt-sound').addEventListener('change', (e) => { if (e.target.checked !== settings.sound) toggleSound(); });
@@ -559,9 +585,12 @@
   const params = new URLSearchParams(location.search);
   const clean = (s) => String(s || '').replace(/^\/?r\//i, '').replace(/[\s,]+/g, '+');
   const initSort = params.get('s') || store.get('sort', 'hot');
-  start(
-    clean(params.get('r') || store.get('sub', 'videos')),
-    ['hot', 'new', 'top', 'rising'].includes(initSort) ? initSort : 'hot',
-    params.get('t') || store.get('t', 'day'),
-  );
+  api.ready.then(() => {
+    start(
+      clean(params.get('r') || store.get('sub', 'videos')),
+      ['hot', 'new', 'top', 'rising'].includes(initSort) ? initSort : 'hot',
+      params.get('t') || store.get('t', 'day'),
+    );
+    if (api.direct && !window.RedditDirect.clientId.get()) openPanel();
+  });
 })();

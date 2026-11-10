@@ -23,6 +23,21 @@ docker compose up -d --build
 
 Puis ouvre `http://IP-DU-SERVEUR:8080`, y compris depuis le téléphone sur le même réseau.
 
+### Sur GitHub Pages (sans serveur)
+
+L'interface est aussi publiée sur <https://freedomfr.github.io/reddit-video-feed/>, à chaque push sur `main`
+(workflow `.github/workflows/pages.yml`). Sans serveur, c'est le navigateur qui interroge Reddit, et Reddit
+n'accepte ça que via son API officielle. Il faut donc une fois :
+
+1. Sur <https://www.reddit.com/prefs/apps>, « create another app… », type **installed app**,
+   redirect uri `http://localhost` (non utilisée).
+2. Copier le code affiché sous le nom de l'app (le `client_id`) et le coller dans le champ
+   « Identifiant de ton app Reddit » des réglages de la page (il s'ouvre tout seul au premier lancement).
+
+L'identifiant reste dans le navigateur (à refaire sur chaque appareil). Il n'y a pas de secret pour ce type
+d'app. Le serveur Docker, lui, n'en a pas besoin et reste utilisable tel quel : la page détecte toute seule
+si elle a un serveur derrière elle.
+
 ## Utilisation
 
 - Touche la pastille en haut à gauche (ou `/`) pour choisir un subreddit, le tri et la période.
@@ -68,4 +83,5 @@ Autres variables : `PORT` (8080 par défaut, hors Docker), `CACHE_TTL` (durée d
 
 - `app.py` : serveur Flask. `/api/feed` interroge Reddit et ne garde que les vidéos ; `/api/audio/<id>`
   retrouve le fichier son d'une vidéo Reddit (image et son sont séparés chez eux).
-- `static/` : l'interface (HTML, CSS, JS sans dépendance ni étape de build).
+- `static/` : l'interface (HTML, CSS, JS sans dépendance ni étape de build). `static/reddit.js` reprend la
+  logique de `app.py` côté navigateur pour la version GitHub Pages.

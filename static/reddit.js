@@ -60,7 +60,11 @@ window.RedditDirect = (() => {
             }),
           });
         } catch {
-          throw new RedditError('Connexion à Reddit impossible (réseau).');
+          // Reddit répond 401 sans en-têtes CORS à un identifiant inconnu : le navigateur n'y voit qu'une erreur réseau.
+          throw new RedditError(
+            "Reddit refuse l'identifiant d'app, ou est injoignable. Vérifie l'identifiant dans les réglages " +
+            '(app de type « installed app »).',
+          );
         }
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data.access_token) {

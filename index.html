@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#000000">
+  <title>Reddit Video Feed</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header id="top">
+    <button id="pill" class="pill" type="button" aria-haspopup="dialog" aria-expanded="false">
+      <span id="pill-sub">r/…</span>
+      <small id="pill-sort"></small>
+      <span aria-hidden="true">▾</span>
+    </button>
+  </header>
+
+  <main id="feed" tabindex="-1"></main>
+
+  <nav id="rail" aria-label="Actions">
+    <button id="btn-prev" class="rbtn only-mouse" type="button" title="Vidéo précédente (K)" aria-label="Vidéo précédente" data-icon="up"></button>
+    <button id="btn-next" class="rbtn only-mouse" type="button" title="Vidéo suivante (J)" aria-label="Vidéo suivante" data-icon="down"></button>
+    <button id="btn-sound" class="rbtn" type="button" title="Son (M)" aria-label="Activer ou couper le son"></button>
+    <button id="btn-copy" class="rbtn" type="button" title="Copier le lien du post" aria-label="Copier le lien du post" data-icon="link"></button>
+    <a id="btn-open" class="rbtn" target="_blank" rel="noopener noreferrer" title="Ouvrir sur Reddit (O)" aria-label="Ouvrir sur Reddit" data-icon="external"></a>
+  </nav>
+
+  <div id="hint" hidden>Touchez ou cliquez pour activer le son</div>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <div id="scrim" hidden></div>
+  <form id="panel" hidden autocomplete="off" aria-label="Choix du subreddit et réglages">
+    <label class="field">
+      <span>Subreddit</span>
+      <div class="inputwrap">
+        <b>r/</b>
+        <input id="sub" name="sub" placeholder="videos  ou  funny+aww" spellcheck="false"
+               autocapitalize="off" autocorrect="off" required>
+      </div>
+    </label>
+    <div id="recents" class="chips" hidden></div>
+
+    <div class="field">
+      <span>Tri</span>
+      <div class="seg" id="sort-seg" role="radiogroup" aria-label="Tri">
+        <button type="button" role="radio" data-v="hot">Tendance</button>
+        <button type="button" role="radio" data-v="new">Nouveau</button>
+        <button type="button" role="radio" data-v="top">Top</button>
+        <button type="button" role="radio" data-v="rising">En hausse</button>
+      </div>
+    </div>
+    <label class="field" id="t-field" hidden>
+      <span>Période</span>
+      <select id="t">
+        <option value="hour">Dernière heure</option>
+        <option value="day">Aujourd'hui</option>
+        <option value="week">Cette semaine</option>
+        <option value="month">Ce mois-ci</option>
+        <option value="year">Cette année</option>
+        <option value="all">Depuis toujours</option>
+      </select>
+    </label>
+    <button class="primary" type="submit">Afficher</button>
+
+    <hr>
+    <label class="switch"><input type="checkbox" id="opt-sound"><span>Son activé par défaut</span></label>
+    <label class="switch"><input type="checkbox" id="opt-next"><span>Passer à la suivante à la fin de la vidéo</span></label>
+    <label class="switch"><input type="checkbox" id="opt-nsfw"><span>Afficher le contenu NSFW</span></label>
+    <p class="keys">↑ ↓ ou K J : vidéo précédente / suivante · Espace : pause · M : son · O : ouvrir sur Reddit · / : changer de subreddit</p>
+  </form>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

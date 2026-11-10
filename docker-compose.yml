@@ -1,0 +1,11 @@
+services:
+  reddit-video-feed:
+    build: .
+    container_name: reddit-video-feed
+    ports:
+      - "8080:8080"
+    environment:
+      # Optionnel : identifiants d'une app Reddit, utiles si Reddit refuse les requêtes anonymes (voir README)
+      REDDIT_CLIENT_ID: ""
+      REDDIT_CLIENT_SECRET: ""
+    restart: unless-stopped
